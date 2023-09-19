@@ -11,7 +11,12 @@ func CheckProtocol(ajuSaudeClient ajusaude.AjuSaudeClient, document string) erro
 		return err
 	}
 
-	fmt.Printf("%d protocolo(s) encontrado(s):\n", len(response.Protocols))
+	if len(response.Protocols) == 0 {
+		fmt.Printf("Nenhum protocolo encontrado ao buscar por %s\n", document)
+		return nil
+	}
+
+	fmt.Printf("%d protocolo(s) encontrado(s) ao buscar por %s:\n", len(response.Protocols), document)
 	fmt.Println("| # | Descrição + Nome | Situação/Condição |")
 	fmt.Println("--------------------------------------------")
 	for index := 0; index < len(response.Protocols); index++ {
