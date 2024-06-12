@@ -9,7 +9,7 @@ import (
 
 func main() {
 	ajuSaudeClient := ajusaude.New(
-		shared.NewHttpClient("http://aracajusaude.voipy.com.br:8090/IDSPortalCidadaoWS/rest/portalcidadao"),
+		shared.NewHttpClient("https://aracajusaude.voipy.com.br:8443/IDSPortalCidadaoWS/rest/portalcidadao"),
 	)
 
 	command := "cli"
