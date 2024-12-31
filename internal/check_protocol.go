@@ -5,22 +5,33 @@ import (
 	"goajusaude/pkg/shared/ajusaude"
 )
 
+const PaginationLimit = 20
+
 func CheckProtocol(ajuSaudeClient ajusaude.AjuSaudeClient, document string) error {
-	response, err := ajuSaudeClient.SearchProtocolByDocument(document)
-	if err != nil {
-		return err
+	page := 0
+	protocols := make([]ajusaude.Protocol, 0)
+	for {
+		page++
+		response, err := ajuSaudeClient.SearchProtocolByDocument(document, page, PaginationLimit)
+		if err != nil {
+			return err
+		}
+
+		protocols = append(protocols, response.Protocols...)
+		if page*PaginationLimit >= response.TotalCount {
+			break
+		}
 	}
 
-	if len(response.Protocols) == 0 {
+	if len(protocols) == 0 {
 		fmt.Printf("Nenhum protocolo encontrado ao buscar por %s\n", document)
 		return nil
 	}
 
-	fmt.Printf("%d protocolo(s) encontrado(s) ao buscar por %s:\n", len(response.Protocols), document)
+	fmt.Printf("%d protocolo(s) encontrado(s) ao buscar por %s:\n", len(protocols), document)
 	fmt.Println("| # | Descrição + Nome | Situação/Condição |")
 	fmt.Println("--------------------------------------------")
-	for index := 0; index < len(response.Protocols); index++ {
-		protocol := response.Protocols[index]
+	for index, protocol := range protocols {
 		fmt.Printf("| %d | %s para %s | %s/%s |\n", (index + 1), protocol.Description, protocol.NameAbbreviation, protocol.Status, protocol.Condition)
 	}
 	fmt.Println("--------------------------------------------")

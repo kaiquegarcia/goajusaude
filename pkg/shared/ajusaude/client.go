@@ -7,7 +7,7 @@ import (
 )
 
 type AjuSaudeClient interface {
-	SearchProtocolByDocument(document string) (*SearchResponse, error)
+	SearchProtocolByDocument(document string, page int, limit int) (*SearchResponse, error)
 }
 
 type ajuSaudeClient struct {
@@ -21,10 +21,15 @@ func New(client shared.HttpClient) AjuSaudeClient {
 type SearchResponse struct {
 	Protocols   []Protocol `json:"lista"`
 	RequestDate string     `json:"dataHora"`
+	TotalCount  int        `json:"totalRegistro"`
 }
 
-func (client ajuSaudeClient) SearchProtocolByDocument(document string) (*SearchResponse, error) {
-	url := fmt.Sprintf("/listaesperapublica?tipo=TODAS&situacao=0&documento=%s", document)
+func (client ajuSaudeClient) SearchProtocolByDocument(
+	document string,
+	page int,
+	limit int,
+) (*SearchResponse, error) {
+	url := fmt.Sprintf("/listaesperapublica?tipo=TODAS&situacao=0&pagina=%d&quantidade=%d&documento=%s", page, limit, document)
 	responseBytes, err := client.client.Get(url)
 	if err != nil {
 		return nil, err
